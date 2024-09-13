@@ -7,17 +7,18 @@ info:
   version: 1.0.0
 servers:
   - url: https://api.epicmarket.in/mobile
+
 paths:
   /branches:
     get:
       tags:
-        - branch
+        - Branch
       summary: Get all branches
       parameters:
-        - $ref: '#/components/parameters/pageParam'
-        - $ref: '#/components/parameters/sizeParam'
+        - $ref: "#/components/parameters/pageParam"
+        - $ref: "#/components/parameters/sizeParam"
       responses:
-        '200':
+        "200":
           description: Successful operation
           content:
             application/json:
@@ -27,7 +28,7 @@ paths:
                   items:
                     type: array
                     items:
-                      $ref: '#/components/schemas/Branch'
+                      $ref: "#/components/schemas/Branch"
                   page:
                     type: integer
                     default: 1
@@ -37,13 +38,13 @@ paths:
                   total:
                     type: integer
                     default: 100
-        '422':
+        "422":
           description: Validation exception
-  
+
   /branches/{branch_id}:
     patch:
       tags:
-        - branch
+        - Branch
       summary: Update a branch status
       parameters:
         - in: path
@@ -63,19 +64,58 @@ paths:
                   type: boolean
                   default: true
       responses:
-        '200':
+        "200":
           description: Successful operation
-        '404':
+        "404":
           description: Branch not found
-                
-          
-  
-  /orders:
-    get: 
+
+  /branches/{branch_id}/menu:
+    get:
       tags:
-        - order
+        - Branch
+        - Menu
+      parameters:
+        - in: path
+          name: branch_id
+          required: true
+          schema:
+            type: string
+            example: br1
+        - in: query
+          name: search_term
+          schema:
+            type: string
+            example: product 1
+        - $ref: "#/components/parameters/pageParam"
+        - $ref: "#/components/parameters/sizeParam"
+      responses:
+        "200":
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  items:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/MenuProduct"
+                  page:
+                    type: integer
+                    default: 1
+                  size:
+                    type: integer
+                    default: 10
+                  total:
+                    type: integer
+                    default: 100
+
+  /orders:
+    get:
+      tags:
+        - Order
       summary: Get all orders
-      parameters: 
+      parameters:
         - in: query
           name: branch_id
           schema:
@@ -87,12 +127,12 @@ paths:
         - in: query
           name: status
           schema:
-            $ref: '#/components/schemas/OrderStatus'
-        - $ref: '#/components/parameters/pageParam'
-        - $ref: '#/components/parameters/sizeParam'
-        
+            $ref: "#/components/schemas/OrderStatus"
+        - $ref: "#/components/parameters/pageParam"
+        - $ref: "#/components/parameters/sizeParam"
+
       responses:
-        '200':
+        "200":
           description: Successful operation
           content:
             application/json:
@@ -101,8 +141,8 @@ paths:
                 properties:
                   items:
                     type: array
-                    items: 
-                      $ref: '#/components/schemas/Order'
+                    items:
+                      $ref: "#/components/schemas/Order"
                   page:
                     type: integer
                     default: 1
@@ -112,14 +152,14 @@ paths:
                   total:
                     type: integer
                     default: 100
-                    
-        '422':
+
+        "422":
           description: Validation exception
-      
+
   /orders/{order_id}:
     get:
       tags:
-        - order
+        - Order
       summary: Get details of an order
       parameters:
         - in: path
@@ -129,18 +169,15 @@ paths:
             type: string
             example: br120240901
       responses:
-        '200':
+        "200":
           description: Successful operation
-          content: 
+          content:
             application/json:
               schema:
-                $ref: '#/components/schemas/OrderDetail'
-          
-      
-      
+                $ref: "#/components/schemas/OrderDetail"
     patch:
       tags:
-        - order
+        - Order
       summary: Update order status
       parameters:
         - in: path
@@ -156,13 +193,28 @@ paths:
             schema:
               type: object
               properties:
-                status: 
-                  $ref: '#/components/schemas/OrderStatus'
+                status:
+                  $ref: "#/components/schemas/OrderStatus"
       responses:
-        '200':
+        "200":
           description: Successful operation
-        '404':
+        "404":
           description: Order not found
+
+  /order-status-options:
+    get:
+      tags:
+        - Option Sets
+      responses:
+        "200":
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Option"
+
 components:
   parameters:
     pageParam:
@@ -177,8 +229,18 @@ components:
       schema:
         type: integer
         default: 10
-  
+
   schemas:
+    Option:
+      type: object
+      properties:
+        text:
+          type: string
+          example: Option 1
+        value:
+          type: string
+          example: 1
+
     OrderStatus:
       type: string
       enum:
@@ -197,14 +259,14 @@ components:
         name:
           type: string
           example: Branch 1
-          
+
     OrderCustomer:
       type: object
       properties:
-        id: 
+        id:
           type: string
           example: cust-1
-        username: 
+        username:
           type: string
           example: janedoe
         name:
@@ -229,7 +291,7 @@ components:
         total_price:
           type: number
           example: 199.8
-  
+
     Branch:
       type: object
       properties:
@@ -251,29 +313,29 @@ components:
           type: string
           example: br120240901
         status:
-          $ref: '#/components/schemas/OrderStatus'
-        payment_mode: 
+          $ref: "#/components/schemas/OrderStatus"
+        payment_mode:
           type: string
           example: cash
         ordered_at:
           type: string
           format: date-time
         branch:
-          $ref: '#/components/schemas/OrderBranch'
+          $ref: "#/components/schemas/OrderBranch"
         customer:
-          $ref: '#/components/schemas/OrderCustomer'
-        items_peak: 
+          $ref: "#/components/schemas/OrderCustomer"
+        items_peak:
           type: array
           description: Only return the first 2 items
           items:
-            $ref: '#/components/schemas/OrderPeakItem'
+            $ref: "#/components/schemas/OrderPeakItem"
         items_count:
           type: integer
           example: 12
         total_price:
           type: integer
           example: 1032.5
-        
+
     OrderDetail:
       type: object
       properties:
@@ -281,24 +343,48 @@ components:
           type: string
           example: br120240901
         status:
-          $ref: '#/components/schemas/OrderStatus'
-        payment_mode: 
+          $ref: "#/components/schemas/OrderStatus"
+        payment_mode:
           type: string
           example: cash
         ordered_at:
           type: string
           format: date-time
         branch:
-          $ref: '#/components/schemas/OrderBranch'
+          $ref: "#/components/schemas/OrderBranch"
         customer:
-          $ref: '#/components/schemas/OrderCustomer'
-        items: 
+          $ref: "#/components/schemas/OrderCustomer"
+        items:
           type: array
           description: Return details of all items
           items:
-            $ref: '#/components/schemas/OrderPeakItem'
+            $ref: "#/components/schemas/OrderPeakItem"
         items_count:
           type: integer
         total_price:
           type: integer
-        
+
+    MenuProduct:
+      type: object
+      properties:
+        id:
+          type: string
+          example: pr1
+        name:
+          type: string
+          example: Product 1
+        description:
+          type: string
+          example: This is Product 1
+        is_recommended:
+          type: boolean
+          example: true
+        in_stock:
+          type: boolean
+          example: true
+        price:
+          type: number
+          example: 29.9
+        thumbnail:
+          type: string
+          example: key-of-the-thumbnail
